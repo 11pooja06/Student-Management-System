@@ -1,0 +1,49 @@
+{
+  "students": [
+    {
+      "name": "pooja",
+      "email": "pooja@gmail.com",
+      "contact": "12345",
+      "age": "24",
+      "id": "xkmxIwu14CQ"
+    },
+    {
+      "name": "jai",
+      "email": "jai@gmail.com",
+      "contact": "123456",
+      "age": "24",
+      "id": "qF6-oZ9Ab5A"
+    },
+    {
+      "name": "advit",
+      "email": "ad@gmail.com",
+      "contact": "1234",
+      "age": "12",
+      "id": "EAWT4H6pQak"
+    },
+    {
+      "name": "atharv",
+      "email": "at@gmail.com",
+      "contact": "1234r5",
+      "age": "12",
+      "id": "Wf1L14U_YtQ"
+    },
+    {
+      "name": "Jai P sharma",
+      "email": "puujasharma600@gmail.com",
+      "contact": "8118871490",
+      "age": "31",
+      "id": "PqEIE95N5P8"
+    }
+  ],
+  "users": [
+    {
+      "name": "pooja sharmas",
+      "email": "pooja@gmail.com",
+      "password": "12345",
+      "contact": "213456765432",
+      "id": "5Zz2TXe0Zyc"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}
