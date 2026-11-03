@@ -3,25 +3,62 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = "http://localhost:5000/api/students";
+
 const Home = () => {
   const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
+  // FETCH STUDENTS FROM MONGODB
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/students")
-      .then((res) => setStudents(res.data))
-      .catch((err) => console.log(err));
+    const fetchStudents = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await axios.get(API_URL);
+
+        console.log("HOME API DATA:", response.data);
+
+        if (!Array.isArray(response.data)) {
+          throw new Error("Invalid API response");
+        }
+
+        setStudents(response.data);
+      } catch (err) {
+        console.error("HOME API ERROR:", err);
+
+        setError(
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to fetch students"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStudents();
   }, []);
+
+  // SHOW LATEST 3 STUDENTS
+  const recentStudents = [...students]
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt || 0) -
+        new Date(a.createdAt || 0)
+    )
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen bg-slate-50">
 
       {/* HERO SECTION */}
       <section className="bg-gradient-to-br from-blue-950 via-blue-900 to-blue-700 text-white">
-
         <div className="max-w-7xl mx-auto px-6 py-20 grid md:grid-cols-2 gap-12 items-center">
 
-          {/* Left Content */}
+          {/* LEFT CONTENT */}
           <div>
             <span className="bg-white/10 border border-white/20 px-4 py-2 rounded-full text-sm">
               🎓 Smart Student Management
@@ -57,7 +94,7 @@ const Home = () => {
             </div>
           </div>
 
-          {/* Right Dashboard Card */}
+          {/* RIGHT DASHBOARD CARD */}
           <div className="bg-white text-blue-950 rounded-3xl p-7 shadow-2xl">
 
             <div className="flex justify-between items-center mb-6">
@@ -67,52 +104,64 @@ const Home = () => {
               <span className="text-2xl">📊</span>
             </div>
 
+            {/* TOTAL STUDENTS */}
             <div className="bg-blue-50 rounded-2xl p-6 mb-5">
               <p className="text-gray-500">
                 Total Registered Students
               </p>
 
               <h3 className="text-5xl font-bold text-blue-900 mt-3">
-                {students.length}
+                {loading ? "..." : students.length}
               </h3>
 
               <p className="text-sm text-blue-600 mt-3">
-                Live student records
+                Live student records from MongoDB
               </p>
             </div>
 
+            {/* RECENT STUDENTS */}
             <h3 className="font-semibold mb-4">
               Recently Added Students
             </h3>
 
+            {error && (
+              <p className="text-red-600 text-sm mb-4">
+                Error: {error}
+              </p>
+            )}
+
             <div className="space-y-3">
-              {students.slice(-3).reverse().map((student) => (
-                <div
-                  key={student.id}
-                  className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl"
-                >
-                  <div className="bg-blue-100 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center font-bold">
-                    {student.name?.charAt(0).toUpperCase()}
-                  </div>
+              {loading ? (
+                <p className="text-gray-500 text-sm">
+                  Loading students...
+                </p>
+              ) : recentStudents.length > 0 ? (
+                recentStudents.map((student) => (
+                  <div
+                    key={student._id}
+                    className="flex items-center gap-3 bg-slate-50 p-3 rounded-xl"
+                  >
+                    <div className="bg-blue-100 text-blue-900 w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                      {student.name?.charAt(0).toUpperCase() || "S"}
+                    </div>
 
-                  <div>
-                    <p className="font-semibold">
-                      {student.name}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {student.email}
-                    </p>
-                  </div>
-                </div>
-              ))}
+                    <div>
+                      <p className="font-semibold">
+                        {student.name}
+                      </p>
 
-              {students.length === 0 && (
+                      <p className="text-sm text-gray-500">
+                        {student.email}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : !error ? (
                 <p className="text-gray-500 text-sm">
                   No students added yet.
                 </p>
-              )}
+              ) : null}
             </div>
-
           </div>
         </div>
       </section>
@@ -135,7 +184,6 @@ const Home = () => {
         </div>
 
         <div className="grid md:grid-cols-3 gap-6">
-
           {[
             {
               icon: "📝",
@@ -178,12 +226,8 @@ const Home = () => {
               </p>
             </Link>
           ))}
-
         </div>
       </section>
-
-      
-
     </div>
   );
 };

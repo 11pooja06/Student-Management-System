@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import img from "/Users/apple/Desktop/Au-react/src/Components/image.png";
+import img from "./image.png";
 
 function Nav() {
   return (

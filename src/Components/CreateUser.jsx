@@ -16,26 +16,38 @@ const CreateUser = () => {
     e.preventDefault();
 
     const payload = {
-      name,
-      email,
-      contact,
-      age
+      name: name.trim(),
+      email: email.trim(),
+      contact: contact.trim(),
+      age: Number(age)
     };
 
     try {
       setLoading(true);
 
-      await axios.post(
-        "http://localhost:3000/students",
+      const response = await axios.post(
+        "http://localhost:5000/api/students",
         payload
       );
 
+      console.log("Student added:", response.data);
+
       alert("Student added successfully!");
+
       navigate("/alluser");
 
     } catch (error) {
-      console.log("Error:", error);
-      alert("Failed to add student.");
+      console.error(
+        "Add Student Error:",
+        error.response?.data || error.message
+      );
+
+      alert(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to add student."
+      );
+
     } finally {
       setLoading(false);
     }
@@ -46,7 +58,6 @@ const CreateUser = () => {
 
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-blue-100 p-8">
 
-        {/* Heading */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🎓</div>
 
@@ -59,7 +70,6 @@ const CreateUser = () => {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
 
           {/* Name */}
@@ -102,7 +112,7 @@ const CreateUser = () => {
 
             <input
               type="tel"
-              placeholder="Enter contact number"
+              placeholder="Enter 10-digit contact number"
               value={contact}
               onChange={(e) => setContact(e.target.value)}
               required
@@ -130,7 +140,6 @@ const CreateUser = () => {
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex gap-4 pt-3">
 
             <button
@@ -150,7 +159,6 @@ const CreateUser = () => {
             </button>
 
           </div>
-
         </form>
       </div>
     </div>

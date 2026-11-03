@@ -21,31 +21,36 @@ const Signup = () => {
     });
   };
 
-  // Save signup data
+  // Save signup data to MongoDB through Express API
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await axios.post(
-        "http://localhost:3000/users",
+      const response = await axios.post(
+        "http://localhost:5000/api/signup",
         form
       );
 
-      alert("Signup successful!");
+      alert(response.data.message);
       navigate("/login");
 
-    } catch (err) {
-      console.log(err);
-      alert("Signup failed!");
-    }
+    } catch (error) {
+  console.log("Signup Error:", error);
+  console.log("Status:", error.response?.status);
+  console.log("Backend Message:", error.response?.data);
+
+  alert(
+    error.response?.data?.message ||
+    error.message ||
+    "Signup failed!"
+  );
+}
   };
 
   return (
     <div className="min-h-[80vh] bg-blue-50 flex items-center justify-center px-4 py-12">
-
       <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-xl">
 
-        {/* Heading */}
         <div className="text-center mb-8">
           <div className="text-5xl mb-4">🎓</div>
 
@@ -58,9 +63,7 @@ const Signup = () => {
           </p>
         </div>
 
-        {/* Signup Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
-
           {[
             { name: "name", type: "text", label: "Full Name" },
             { name: "email", type: "email", label: "Email Address" },
@@ -68,7 +71,6 @@ const Signup = () => {
             { name: "contact", type: "tel", label: "Contact Number" }
           ].map((field) => (
             <div key={field.name}>
-
               <label className="block text-gray-700 mb-2 font-medium">
                 {field.label}
               </label>
@@ -80,9 +82,9 @@ const Signup = () => {
                 value={form[field.name]}
                 onChange={handleChange}
                 required
+                minLength={field.name === "password" ? 8 : undefined}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 outline-none focus:border-blue-600"
               />
-
             </div>
           ))}
 
@@ -92,10 +94,8 @@ const Signup = () => {
           >
             Create Account
           </button>
-
         </form>
 
-        {/* Login Link */}
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{" "}
           <Link
